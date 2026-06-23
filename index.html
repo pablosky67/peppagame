@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nuestro Universo - Peppa Muddy Puddles Deluxe 🐷☀️</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-sky: #bae6fd;
+            --grass-light: #4ade80;
+            --grass-dark: #22c55e;
+            --peppa-pink: #ff9aae;
+            --peppa-dress: #ff4d4d;
+            --mud-dark: #78350f;
+            --mud-light: #92400e;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --accent: #d946ef;
+        }
+
+        body {
+            margin: 0;
+            padding: 10px;
+            background: #f8fafc;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+            overflow: hidden;
+            touch-action: manipulation;
+            user-select: none;
+        }
+
+        .contenedor-interactivo {
+            width: 100%;
+            max-width: 420px;
+            background: #ffffff;
+            border: 4px solid #cbd5e1;
+            border-radius: 32px;
+            padding: 25px 20px;
+            box-sizing: border-box;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            position: relative;
+            min-height: 500px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .instrucciones {
+            font-size: 1rem;
+            color: var(--text-main);
+            margin-bottom: 15px;
+            font-weight: 700;
+            min-height: 48px;
+            line-height: 1.4;
+        }
+
+        /* Escenario con detalles */
+        .escenario {
+            width: 100%;
+            height: 250px;
+            background: linear-gradient(to bottom, #bae6fd 0%, #e0f2fe 100%);
+            border-radius: 24px;
+            border: 2px solid #94a3b8;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 15px;
+            box-shadow: inset 0 6px 12px rgba(0,0,0,0.06);
+        }
+
+        /* Detalle: Sol Animado */
+        .sol-completo {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            animation: rotarSol 20s linear infinite;
+        }
+        .sol-centro {
+            width: 36px;
+            height: 36px;
+            background: #fbbf24;
+            border-radius: 50%;
+            position: absolute;
+            top: 7px; left: 7px;
+            box-shadow: 0 0 20px #f59e0b;
+        }
+        .sol-rayos {
+            width: 50px;
+            height: 50px;
+            border: 2px dashed #f59e0b;
+            border-radius: 50%;
+        }
+
+        /* Detalle: Nubes pasando */
+        .nube {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .nube::before, .nube::after {
+            content: '';
+            position: absolute;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+        }
+        .nube.n1 {
+            width: 50px; height: 20px; top: 30px; left: -60px;
+            animation: moverNube 25s linear infinite;
+        }
+        .nube.n1::before { width: 25px; height: 25px; top: -10px; left: 10px; }
+        .nube.n1::after { width: 20px; height: 20px; top: -5px; left: 25px; }
+
+        .nube.n2 {
+            width: 40px; height: 15px; top: 60px; left: -50px;
+            animation: moverNube 18s linear infinite;
+            animation-delay: 5s;
+            opacity: 0.7;
+        }
+        .nube.n2::before { width: 20px; height: 20px; top: -8px; left: 8px; }
+
+        .pasto {
+            width: 100%;
+            height: 65px;
+            background: var(--grass-light);
+            position: absolute;
+            bottom: 0; left: 0;
+            border-top: 4px solid var(--grass-dark);
+        }
+
+        /* Detalle: Flores en el pasto */
+        .flor {
+            position: absolute;
+            width: 6px; height: 6px;
+            background: #f43f5e;
+            border-radius: 50%;
+            transition: transform 0.2s;
+        }
+        .flor::before {
+            content: ''; position: absolute; top: -3px; left: 2px;
+            width: 2px; height: 12px; background: #16a34a; z-index: -1;
+        }
+        .flor.f1 { bottom: 12px; left: 30px; background: #ec4899; }
+        .flor.f2 { bottom: 25px; left: 75px; background: #a855f7; }
+        .flor.f3 { bottom: 15px; right: 40px; background: #f59e0b; }
+
+        /* Charco de Lodo con capas de profundidad */
+        .charco-lodo {
+            width: 200px;
+            height: 42px;
+            background: var(--mud-light);
+            border: 3px solid var(--mud-dark);
+            border-radius: 50%;
+            position: absolute;
+            bottom: 12px; left: 50%;
+            transform: translateX(-50%);
+            opacity: 0.95;
+            transition: all 0.2s ease;
+            box-shadow: inset 0 6px 8px rgba(0,0,0,0.3);
+        }
+
+        /* Fase 1: Botas estéticas */
+        .bota-item {
+            width: 55px;
+            height: 65px;
+            position: absolute;
+            bottom: 32px; left: 50%;
+            transform: translateX(-50%);
+            cursor: pointer;
+            filter: drop-shadow(0 6px 8px rgba(0,0,0,0.15));
+            animation: flotarBota 1.4s infinite ease-in-out;
+        }
+
+        /* Fase 2: Peppa Pig estructurada */
+        .peppa-personaje {
+            display: none;
+            width: 110px;
+            height: 140px;
+            position: absolute;
+            bottom: 22px; left: 50%;
+            transform: translateX(-50%);
+            cursor: pointer;
+            transform-origin: bottom center;
+        }
+
+        .peppa-cuerpo {
+            width: 76px; height: 70px;
+            background: var(--peppa-dress);
+            border-radius: 42px 42px 12px 12px;
+            position: absolute; bottom: 22px; left: 17px;
+            box-shadow: inset -4px -4px 0 rgba(0,0,0,0.06);
+        }
+        .peppa-cabeza {
+            width: 60px; height: 54px;
+            background: var(--peppa-pink);
+            border-radius: 50%;
+            position: absolute; top: 24px; left: 17px;
+        }
+        .peppa-trompa {
+            width: 44px; height: 26px;
+            background: var(--peppa-pink);
+            border-radius: 14px;
+            position: absolute; top: 32px; left: -14px;
+            transform: rotate(-4deg);
+            border-left: 1px solid rgba(0,0,0,0.05);
+        }
+        .peppa-orificios {
+            position: absolute; top: 6px; left: 4px;
+            width: 3px; height: 3px; background: #de6b82; border-radius: 50%;
+            box-shadow: 0 8px 0 #de6b82;
+        }
+        .peppa-sonrisa {
+            position: absolute; bottom: 8px; left: 12px;
+            width: 18px; height: 10px;
+            border-bottom: 3px solid #de6b82; border-radius: 0 0 10px 10px;
+            transform: rotate(-10deg);
+        }
+        .peppa-cachete {
+            width: 15px; height: 15px;
+            background: #ff6b8b; border-radius: 50%;
+            position: absolute; top: 44px; right: 22px; opacity: 0.8;
+        }
+        .peppa-ojo {
+            width: 9px; height: 9px;
+            background: white; border-radius: 50%;
+            position: absolute; top: 32px; left: 15px;
+            display: flex; align-items: center; justify-content: center;
+            border: 0.5px solid rgba(0,0,0,0.05);
+        }
+        .peppa-ojo.o2 { left: 27px; top: 29px; }
+        .peppa-pupila { width: 4.5px; height: 4.5px; background: black; border-radius: 50%; }
+        .peppa-oreja {
+            width: 11px; height: 18px;
+            background: var(--peppa-pink); border-radius: 50%;
+            position: absolute; top: 13px; left: 36px;
+        }
+        .peppa-oreja.e2 { left: 49px; top: 15px; }
+        
+        /* Botas amarillas */
+        .peppa-pata { width: 8px; height: 18px; background: #543516; position: absolute; bottom: 6px; }
+        .peppa-pata.izq { left: 38px; } .peppa-pata.der { left: 58px; }
+        .bota-amarilla {
+            width: 18px; height: 14px;
+            background: #facc15; border-radius: 4px 10px 4px 4px;
+            position: absolute; bottom: 0; border: 1px solid #eab308;
+        }
+        .bota-amarilla.izq { left: 32px; } .bota-amarilla.der { left: 52px; }
+
+        /* Animación de Salto con rotación alegre */
+        .peppa-personaje.saltando {
+            animation: saltarGiro 0.35s ease-out;
+        }
+
+        /* Partículas de lodo mejoradas */
+        .salpicadura {
+            position: absolute;
+            background: var(--mud-light);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: parabolaSplat 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+            border: 0.5px solid var(--mud-dark);
+        }
+
+        /* Reacción de flores */
+        .asustar-flor {
+            transform: scale(1.3) translateY(2px);
+        }
+
+        /* Barra de Progreso Linda */
+        .progreso-contenedor {
+            display: none;
+            width: 100%;
+            height: 10px;
+            background: #e2e8f0;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 5px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .progreso-barra {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(to right, #facc15, #f59e0b, var(--mud-light));
+            transition: width 0.1s ease;
+        }
+
+        /* PANTALLA RECOMPENSA PREMIO */
+        .pantalla-recompensa {
+            display: none;
+            width: 100%;
+            animation: aparecer 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            flex-direction: column;
+            align-items: center;
+        }
+        .recompensa-card {
+            background: linear-gradient(180deg, #faf5ff 0%, #f3e8ff 100%);
+            border: 2px solid #d946ef;
+            border-radius: 24px;
+            padding: 25px 20px;
+            width: 100%;
+            max-width: 320px;
+            box-shadow: 0 15px 30px rgba(217, 70, 239, 0.2);
+            margin-top: 15px;
+        }
+        .disco-vinilo {
+            width: 100px;
+            height: 100px;
+            background: #111;
+            border-radius: 50%;
+            margin: 0 auto 15px auto;
+            position: relative;
+            border: 4px solid #222;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: rotar 3.5s linear infinite;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+        .disco-centro {
+            width: 34px;
+            height: 34px;
+            background: #d946ef;
+            border-radius: 50%;
+            border: 3px solid #111;
+        }
+        .btn-spotify {
+            background: #1DB954;
+            color: white;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 5px 15px rgba(29, 185, 84, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 12px;
+        }
+        .btn-spotify:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(29, 185, 84, 0.5);
+        }
+
+        /* KEYFRAMES DETALLADOS */
+        @keyframes rotarSol { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes moverNube {
+            0% { left: -60px; }
+            100% { left: 430px; }
+        }
+        @keyframes flotarBota {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-10px); }
+        }
+        @keyframes saltarGiro {
+            0% { bottom: 22px; transform: translateX(-50%) scaleY(1) rotate(0deg); }
+            30% { transform: translateX(-50%) scaleY(1.08) rotate(-4deg); }
+            50% { bottom: 85px; transform: translateX(-50%) scaleY(1) rotate(0deg); }
+            70% { transform: translateX(-50%) scaleY(1.08) rotate(4deg); }
+            100% { bottom: 22px; transform: translateX(-50%) scaleY(0.92) rotate(0deg); }
+        }
+        @keyframes parabolaSplat {
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            40% { opacity: 1; }
+            100% { transform: translate(var(--x), var(--y)) scale(0.1); opacity: 0; }
+        }
+        @keyframes rotar { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes aparecer { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+    </style>
+</head>
+<body>
+
+    <div class="contenedor-interactivo" id="caja-principal">
+        <div id="juego-fases" style="width: 100%;">
+            <p class="instrucciones" id="texto-guia">¡Presiona las botas de lluvia para que Peppa se prepare! 💛🌧️</p>
+
+            <div class="escenario" id="area-escenario">
+                <div class="sol-completo"><div class="sol-rayos"></div><div class="sol-centro"></div></div>
+                <div class="nube n1"></div>
+                <div class="nube n2"></div>
+                
+                <div class="pasto"></div>
+                <div class="flor f1"></div>
+                <div class="flor f2"></div>
+                <div class="flor f3"></div>
+                
+                <div class="charco-lodo" id="charco"></div>
+
+                <svg class="bota-item" id="bota-click" onclick="ponerBotas()" viewBox="0 0 64 64">
+                    <path d="M16 48 V20 Q16 12 28 12 H36 V28 Q36 36 48 40 V52 Q48 56 40 56 H24 Q16 56 16 48 Z" fill="#facc15"/>
+                    <path d="M24 56 H44 Q48 56 48 52 V46 H20 V52 Q20 56 24 56 Z" fill="#eab308"/>
+                </svg>
+
+                <div class="peppa-personaje" id="peppa" onclick="saltarEnLodo()">
+                    <div class="peppa-oreja"></div>
+                    <div class="peppa-oreja e2"></div>
+                    <div class="peppa-trompa"><div class="peppa-orificios"></div></div>
+                    <div class="peppa-cabeza">
+                        <div class="peppa-ojo"><div class="peppa-pupila"></div></div>
+                        <div class="peppa-ojo o2"><div class="peppa-pupila"></div></div>
+                        <div class="peppa-cachete"></div>
+                        <div class="peppa-sonrisa"></div>
+                    </div>
+                    <div class="peppa-cuerpo"></div>
+                    <div class="peppa-pata izq"></div>
+                    <div class="peppa-pata der"></div>
+                    <div class="bota-amarilla izq"></div>
+                    <div class="bota-amarilla der"></div>
+                </div>
+            </div>
+
+            <div class="progreso-contenedor" id="progreso-zona">
+                <div class="progreso-barra" id="barra"></div>
+            </div>
+        </div>
+
+        <div class="pantalla-recompensa" id="pantalla-premio">
+            <h2 style="margin: 0; background: linear-gradient(to right, #a855f7, #db2777); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800;">¡Cómplices por Siempre! 🏁✨</h2>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin: 5px 0 10px 0;">Peppa terminó de saltar y liberó tu melodía especial:</p>
+            
+            <div class="recompensa-card">
+                <div class="disco-vinilo">
+                    <div class="disco-centro"></div>
+                </div>
+                <h3 style="font-size: 1.25rem; margin: 0 0 4px 0; color: #581c87; font-weight: 700;">Cómplice Eterno</h3>
+                <p style="font-size: 0.9rem; color: #a855f7; margin: 0 0 15px 0; font-weight: 500;">Pablorico 🎧</p>
+                
+                <a href="https://open.spotify.com/intl-es/track/1nfiPnAkbyLFUZ9PKHTCSS?si=d874bec4ff26419d" target="_blank" class="btn-spotify">
+                    <span>Escuchar en Spotify</span> 🎵
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const textoGuia = document.getElementById("texto-guia");
+        const botaClick = document.getElementById("bota-click");
+        const peppa = document.getElementById("peppa");
+        const charco = document.getElementById("charco");
+        const progresoZona = document.getElementById("progreso-zona");
+        const barra = document.getElementById("barra");
+        const juegoFases = document.getElementById("juego-fases");
+        const pantallaPremio = document.getElementById("pantalla-premio");
+        const areaEscenario = document.getElementById("area-escenario");
+        const flores = document.querySelectorAll(".flor");
+
+        let faseActual = 1; 
+        let saltosDados = 0;
+        const saltosTotales = 30;
+
+        function ponerBotas() {
+            if (faseActual !== 1) return;
+            
+            botaClick.style.display = "none";
+            peppa.style.display = "block";
+            progresoZona.style.display = "block";
+            faseActual = 2;
+            textoGuia.innerText = "¡Toca a Peppa para saltar con todo en el lodo! 🍂✨";
+        }
+
+        function saltarEnLodo() {
+            if (faseActual !== 2 || peppa.classList.contains("saltando")) return;
+
+            saltosDados++;
+            
+            // Animación física
+            peppa.classList.add("saltando");
+            setTimeout(() => peppa.classList.remove("saltando"), 350);
+
+            // Progreso
+            const porcentaje = (saltosDados / saltosTotales) * 100;
+            barra.style.width = porcentaje + "%";
+
+            // Reducción paulatina del charco
+            const nuevoAncho = 200 - (160 * (saltosDados / saltosTotales));
+            const nuevoAlto = 42 - (34 * (saltosDados / saltosTotales));
+            charco.style.width = nuevoAncho + "px";
+            charco.style.height = nuevoAlto + "px";
+
+            // Animación de las flores del prado reaccionando al impacto
+            flores.forEach(f => {
+                f.classList.add("asustar-flor");
+                setTimeout(() => f.classList.remove("asustar-flor"), 200);
+            });
+
+            // Explosión de salpicaduras parabólicas
+            for (let i = 0; i < 8; i++) {
+                crearSalpicadura();
+            }
+
+            // Fin del juego
+            if (saltosDados >= saltosTotales) {
+                faseActual = 3;
+                charco.style.opacity = "0";
+                setTimeout(() => {
+                    juegoFases.style.display = "none";
+                    pantallaPremio.style.display = "flex";
+                }, 450);
+            }
+        }
+
+        function crearSalpicadura() {
+            const splat = document.createElement("div");
+            splat.className = "salpicadura";
+            
+            const tamano = 5 + Math.random() * 9;
+            splat.style.width = tamano + "px";
+            splat.style.height = tamano + "px";
+            
+            // Origen: el centro del charco
+            splat.style.bottom = "24px";
+            splat.style.left = "50%";
+            
+            // Físicas: parábolas variables hacia izquierda y derecha
+            const anguloX = (Math.random() - 0.5) * 180;
+            const alturaY = -(30 + Math.random() * 85);
+            
+            splat.style.setProperty('--x', anguloX + 'px');
+            splat.style.setProperty('--y', alturaY + 'px');
+            
+            areaEscenario.appendChild(splat);
+            setTimeout(() => splat.remove(), 450);
+        }
+    </script>
+</body>
+</html>
